@@ -1,0 +1,55 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pingpong-operator-chart.name" . }}-role
+rules:
+  - apiGroups: ["", "apps"]
+    resources: ["configmaps", "pods", "services", "events", "statefulsets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+  - apiGroups: ["apps.example.com"]
+    resources: ["pingpongs", "pingpongs/status"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pingpong-operator-chart.name" . }}-rb
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pingpong-operator-chart.serviceAccountName" . }}
+roleRef:
+  kind: Role
+  name: {{ include "pingpong-operator-chart.name" . }}-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "pingpong-operator-chart.name" . }}-crd-access
+rules:
+  # Allow kopf to read CRDs
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list", "watch"]
+
+  # Allow kopf to list/watch our CRs at cluster scope
+  - apiGroups: ["apps.example.com"]
+    resources: ["pingpongs", "pingpongs/status"]
+    verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "pingpong-operator-chart.name" . }}-crd-access-binding
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pingpong-operator-chart.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "pingpong-operator-chart.name" . }}-crd-access
+  apiGroup: rbac.authorization.k8s.io

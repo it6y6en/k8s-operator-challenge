@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pingpong-operator-chart.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "pingpong-operator-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pingpong-operator-chart.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "pingpong-operator-chart.serviceAccountName" . }}
+      containers:
+        - name: operator
+          # image: 6y6en/pingpong-operator:latest
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: Always
+          env:
+            - name: KOPF_LOGGING_LEVEL
+              value: "INFO"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 64Mi 
+            limits:
+              cpu: 500m
+              memory: 256Mi

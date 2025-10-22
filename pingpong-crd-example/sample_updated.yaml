@@ -1,0 +1,8 @@
+apiVersion: apps.example.com/v1alpha1
+kind: PingPong
+metadata:
+  name: cluster-sample
+spec:
+  replicas: 5
+  timer: 15
+  image: 6y6en/pingpong-server:v0.0.1

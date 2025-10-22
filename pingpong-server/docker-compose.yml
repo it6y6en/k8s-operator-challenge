@@ -1,0 +1,30 @@
+# version: '3.8'
+
+services:
+  cluster-0:
+    build: .
+    # ports:
+    #   - "80:80"    
+    expose:
+      - "80"
+    volumes:
+      - ./config.yaml:/var/server/config.yaml
+      # - ./app:/app
+    restart: always
+    environment:
+      - HOSTNAME=cluster-0
+      # - FLASK_DEBUG=1
+  cluster-1:
+    build: .
+    # ports:
+    #   - "80:80"    
+    expose:
+      - "80"
+    volumes:
+      - ./config.yaml:/var/server/config.yaml
+      # - ./app:/app
+    restart: always
+    environment:
+      - HOSTNAME=cluster-1
+    #   - FLASK_ENV=development
+    #   - FLASK_DEBUG=1

@@ -1,0 +1,35 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: pingpongs.apps.example.com
+spec:
+  group: apps.example.com
+  names:
+    kind: PingPong
+    plural: pingpongs
+    singular: pingpong
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                replicas:
+                  type: integer
+                  minimum: 0
+                  maximum: 5
+                  default: 1
+                timer:
+                  type: integer
+                  minimum: 1
+                  default: 30
+                image:
+                  type: string
+      subresources:
+        status: {}
